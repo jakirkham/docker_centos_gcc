@@ -33,4 +33,20 @@ RUN yum update -y && \
     yum update -y && \
     yum clean all -y
 
+RUN yum update -y && \
+    yum install -y curl \
+                   file \
+                   openssl && \
+    export HELLO_TESTS_VERSION="0.0.1" && \
+    curl -L "https://github.com/jakirkham/hello_tests/archive/v${HELLO_TESTS_VERSION}.tar.gz" > hello_tests.tar.gz && \
+    openssl md5 hello_tests.tar.gz | grep c18d2a7b29dbc685ad6413feebc82c06 && \
+    tar -zxf hello_tests.tar.gz && \
+    rm hello_tests.tar.gz && \
+    mv "hello_tests-${HELLO_TESTS_VERSION}" hello_tests && \
+    cd hello_tests && \
+    scl enable devtoolset-2 "bash hellos_run.sh" && \
+    cd .. && \
+    rm -rf hello_tests && \
+    yum clean all -y
+
 ENTRYPOINT ["scl", "enable", "devtoolset-2", "bash"]
